@@ -1,6 +1,7 @@
-var mongoose = require("mongoose")
+var mongoose = require('mongoose');
+var moment = require('moment');
 
-var Schema = mongoose.Schema
+var Schema = mongoose.Schema;
 
 var BookInstanceSchema = new Schema(
   {
@@ -9,12 +10,20 @@ var BookInstanceSchema = new Schema(
     status: {type: String, required: true, enum: ['Available', 'Maintenance', 'Loaned', 'Reserved'], default: 'Maintenance'},
     due_back: {type: Date, default: Date.now}
   }
-)
+);
+
+// Virtual for bookinstance's URL
 BookInstanceSchema
 .virtual('url')
-.get(function(){
+.get(function () {
   return '/catalog/bookinstance/' + this._id;
-})
+});
+
+BookInstanceSchema
+.virtual('due_back_formatted')
+.get(function () {
+  return `${this.due_back.getDay()}, ${this.due_back.getMonth()} ${this.due_back.getYear()}`;
+});
 
 //Export model
 module.exports = mongoose.model('BookInstance', BookInstanceSchema);
